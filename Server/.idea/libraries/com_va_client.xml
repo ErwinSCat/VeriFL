@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="com.va.client">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Client/app/src/main/java" />
+    </SOURCES>
+  </library>
+</component>

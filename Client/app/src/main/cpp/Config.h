@@ -1,0 +1,50 @@
+#ifndef _CONFIG_H
+#define _CONFIG_H
+
+/*
+ *	This file defines some common reference strings
+ */
+
+//		Macros of size			# of bytes					   Why this value?
+#define _MAX_BUFFER_SIZE		1024
+#define _ULTRA_BUFFER_SIZE		524288						// 512KB
+
+#define _ECC_POINT_SIZE 		33							// ECC point compression
+#define _SHARE_FIELD_SIZE		(_ECC_POINT_SIZE + 1)
+#define _COMMITMENT_SIZE		32							// Folklore hash commitment with SHA256
+#define _SYM_KEY_SIZE			32							// AES-256
+#define _IV_SIZE				16
+#define _AGREED_KEY_SIZE		(_SYM_KEY_SIZE + _IV_SIZE)
+#define _PID_BYTE_SIZE			2
+#define _SYM_CIPHERTEXT_SIZE	(_SHARE_FIELD_SIZE*4)
+
+//								# of bits
+#define _AGG_BOUND_SLACK_SIZE	10							// Maximum number of parties: 2^10 = 1024
+
+
+// Used as hardcoded parameters for HomHash.HGen
+const unsigned char _homhash_seed_key[32] = {
+	0xee, 0xbc, 0x1f, 0x57, 0x48, 0x7f, 0x51, 0x92,
+	0x1c, 0x04, 0x65, 0x66, 0x5f, 0x8a, 0xe6, 0xd1,
+	0x65, 0x8b, 0xb2, 0x6d, 0xe6, 0xf8, 0xa0, 0x69,
+	0xa3, 0x52, 0x02, 0x93, 0xa5, 0x72, 0x07, 0x8f
+};
+
+const unsigned char _homhash_seed_iv[16] = {
+	0x99, 0xaa, 0x3e, 0x68, 0xed, 0x81, 0x73, 0xa0,
+	0xee, 0xd0, 0x66, 0x84, 0xf5, 0x6e, 0x87, 0x05
+};
+
+const unsigned char _homhash_seed_plaintext[32] = {
+	0x6e, 0x80, 0xdd, 0x7f, 0x1b, 0xad, 0xf3, 0xa1,
+	0xc9, 0xab, 0x25, 0xc7, 0x5f, 0x10, 0xbd, 0xe7,
+	0x8c, 0x23, 0xfa, 0x0e, 0xb8, 0xf9, 0xaa, 0xa5,
+	0x3a, 0xde, 0xfb, 0xf4, 0xcb, 0xf7, 0x8f, 0xe4
+};
+
+
+// Used as hardcoded parameters for PRG (which is implemented by AES-CTR mode)
+const unsigned char _prg_seed_plaintext[_ULTRA_BUFFER_SIZE] = { 0x00 };
+
+#endif
+

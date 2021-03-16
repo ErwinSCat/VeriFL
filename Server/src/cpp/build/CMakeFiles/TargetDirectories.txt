@@ -1,0 +1,4 @@
+/home/veda/workspace/va/Server/src/cpp/build/CMakeFiles/rebuild_cache.dir
+/home/veda/workspace/va/Server/src/cpp/build/CMakeFiles/edit_cache.dir
+/home/veda/workspace/va/Server/src/cpp/build/CMakeFiles/native-server.dir
+/home/veda/workspace/va/Server/src/cpp/build/CMakeFiles/native-client.dir
