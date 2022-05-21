@@ -1,5 +1,26 @@
 # VeriFL
 
+## Important Note on Security
+
+On May 20, 2022, we found that there is a flaw in the security proof of [VeriFL](https://ieeexplore.ieee.org/document/9285303). We thank [@Jinhyun So](https://jinhyun-so.github.io/) for helping us spot this issue and plan to present a detailed patched version of VeriFL protocol in a few months. We sincerely apologize for any inconvenience caused by our work.
+
+### The issue
+
+We discuss this flaw as follows. In brief, **the published homomorphic hashes in the verification phase may help the adversary guess the input vector of an honest client if this vector itself does not have sufficient entropy (i.e., has only a few possible values)**.
+
+In VeriFL, we consider a "weakened" malicious adversary such that the corrupted parties must use their original inputs (this frees us from extracting the actually used inputs as in standard malicious security, making the communication-independent feature possible). To show that input privacy holds for the inputs of honest parties, we need to construct a simulator that is only given the aggregate results but can "simulate" the messages to be received by the corrupted parties without knowing the individual input of each honest party. The term "simulate" refers to that the distribution of these simulated messages should be identically/statistically/computationally indistinguishable from that of the messages in the real protocol. If such a simulator does not exist, there must be some information leakage in the real protocol beyond what can be obtained from the aggregate results.
+
+Note that a linearly homomorphic hash is a **deterministic** function of a input vector. This means that the simulator without knowning the actual inputs of honest parties cannot simulate some hash values such that their distribution is exactly that in the real protocol. Even if secret sharing and commitment help us hide the distribution of simulated hashes in the **aggregation phase**, these hashes still need to be revealed in the **verification phase**. Therefore, the distinguisher can distinguish between the real case and the simulated case, failing the security proof.
+
+### A high-level description about the patched VeriFL
+The considered patch to VeriFL is that, instead of applying linearly homomorphic hash to the original input vector, we compute the hash of the **partially masked input** that adds up the original input and all pairwise-mask vectors in **Round 2**. Since at least one pairwise-mask vector is pseudorandom from the view of the adversary (otherwise, there will be only one honest party, and the security trivially fails), the published hashes of honest parties must be uniformly distributed (conditioned on that their combination equals to the hash of the sum of all honest parties) from the view of the adversary. This helps the security proof go through. Each party sends it hash (#1) along with the masked input to the server in **Round 2** and receives the hashes of other parties at the start of **Round 3**.
+
+However, to maintain the correctness in terms of verification, **it is required that no dropout occurs in Round 2, i.e., U_2 = U_3**. Otherwise, the pairwise-masks inside hashes cannot be fully cancelled. We cannot ask the server to provide the "complement" hashes of the remaining pairwise-masks (for i \in U_3 and j \in U_2\U_3) since this practice allows the server to forge aggregate results. Using hashes in (#1), one can verify the correctness of aggegation by the linearity of hash.
+
+In the above patched VeriFL, commitment is no longer required, and the secret sharing for hash values and commitment/decommitment strings can be saved. The first two rounds in the **verification phase** can also be removed. Batch verification is still preserved.
+
+As for performance, the computational cost (dominated by a hash call in each aggregation phase and a hash call in the batch verification phase) for each client does not significantly change. The communication of each client is reduced due to the savings of commitment and the removed secret shares.
+
 ## Preface
 
 This repository provides two [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) projects for VeriFL. The project **Client** involves the Android benchmark for clients participating in VeriFL protocol. The project **Server** involves the benchmark of the whole VeriFL protocol (see `Server/src/java/com/va/server/Main.java` and `Server/src/java/com/va/server/SimAggregationServer.java` for detail).
