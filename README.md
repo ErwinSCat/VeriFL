@@ -4,6 +4,8 @@
 
 On May 20, 2022, we found that there is a flaw in the security proof of [VeriFL](https://ieeexplore.ieee.org/document/9285303). We thank [@Jinhyun So](https://jinhyun-so.github.io/) for helping us spot this issue and plan to present a detailed patched version of VeriFL protocol in a few months. We sincerely apologize for any inconvenience caused by our work.
 
+(Updated May 26, 2022) Due to the requirement that there is no dropout between several rounds, we think that our patched VeriFL is limited to the FL settings without dropout. 
+
 ### The issue
 
 We discuss this flaw as follows. In brief, **the published homomorphic hashes in the verification phase may help the adversary guess the input vector of an honest client if this vector itself does not have sufficient entropy (i.e., has only a few possible values)**.
@@ -16,6 +18,8 @@ Note that a linearly homomorphic hash is a **deterministic** function of a input
 The considered patch to VeriFL is that, instead of applying linearly homomorphic hash to the original input vector, we compute the hash of the **partially masked input** that adds up the original input and all pairwise-mask vectors in **Round 2**. Since at least one pairwise-mask vector is pseudorandom from the view of the adversary (otherwise, there will be only one honest party, and the security trivially fails), the published hashes of honest parties must be uniformly distributed (conditioned on that their combination equals to the hash of the sum of all honest parties) from the view of the adversary. This helps the security proof go through. Each party sends it hash (#1) along with the masked input to the server in **Round 2** and receives the hashes of other parties at the start of **Round 3**.
 
 However, to maintain the correctness in terms of verification, **it is required that no dropout occurs in Round 2, i.e., U_2 = U_3**. Otherwise, the pairwise-masks inside hashes cannot be fully cancelled. We cannot ask the server to provide the "complement" hashes of the remaining pairwise-masks (for i \in U_3 and j \in U_2\U_3) since this practice allows the server to forge aggregate results. Using hashes in (#1), one can verify the correctness of aggegation by the linearity of hash.
+
+To prevent the adversary from changing a hash value of a **corrupted** client after seeing the aggregate result, we can let the clients previously exchange their hash values by introducing an **additional** round between **Round 2** and **Round 3**. This design makes that the adversary cannot base the hashes of corrupted parties on the aggregate result (since the honest parties do not give out self-masks b_i's by the time the adversary sends these hashes). Unfortunately, we still need to assume that there is no dropout between these rounds.
 
 In the above patched VeriFL, commitment is no longer required, and the secret sharing for hash values and commitment/decommitment strings can be saved. The first two rounds in the **verification phase** can also be removed. Batch verification is still preserved.
 
