@@ -4,8 +4,6 @@
 
 On May 20, 2022, we found that there is a flaw in the security proof of [VeriFL](https://ieeexplore.ieee.org/document/9285303). We thank [@Jinhyun So](https://jinhyun-so.github.io/) for helping us spot this issue and plan to present a detailed patched version of VeriFL protocol in a few months. We sincerely apologize for any inconvenience caused by our work.
 
-(Updated May 26, 2022) Due to the requirement that there is no dropout between several rounds, we think that our patched VeriFL is limited to the FL settings without dropout. 
-
 ### The issue
 
 We discuss this flaw as follows. In brief, **the published homomorphic hashes in the verification phase may help the adversary guess the input vector of an honest client if this vector itself does not have sufficient entropy (i.e., has only a few possible values)**.
