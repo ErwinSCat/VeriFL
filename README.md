@@ -19,8 +19,6 @@ The considered patch to VeriFL is that, instead of applying linearly homomorphic
 
 However, to maintain the correctness in terms of verification, **it is required that no dropout occurs in Round 2, i.e., U_2 = U_3**. Otherwise, the pairwise-masks inside hashes cannot be fully cancelled. We cannot ask the server to provide the "complement" hashes of the remaining pairwise-masks (for i \in U_3 and j \in U_2\U_3) since this practice allows the server to forge aggregate results. Using hashes in (#1), one can verify the correctness of aggegation by the linearity of hash.
 
-To prevent the adversary from changing a hash value of a **corrupted** client after seeing the aggregate result, we can let the clients previously exchange their hash values by introducing an **additional** round between **Round 2** and **Round 3**. This design makes that the adversary cannot base the hashes of corrupted parties on the aggregate result (since the honest parties do not give out self-masks b_i's by the time the adversary sends these hashes). Unfortunately, we still need to assume that there is no dropout between these rounds.
-
 In the above patched VeriFL, commitment is no longer required, and the secret sharing for hash values and commitment/decommitment strings can be saved. The first two rounds in the **verification phase** can also be removed. Batch verification is still preserved.
 
 As for performance, the computational cost (dominated by a hash call in each aggregation phase and a hash call in the batch verification phase) for each client does not significantly change. The communication of each client is reduced due to the savings of commitment and the removed secret shares.
